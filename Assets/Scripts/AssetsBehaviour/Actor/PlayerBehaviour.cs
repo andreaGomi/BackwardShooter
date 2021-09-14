@@ -56,17 +56,21 @@ public class PlayerBehaviour : Actor
 	{
 		currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, attributes.acceleration);
 		rigidBody.velocity = transform.forward * currentSpeed;
-		Debug.Log("Main - magn: " + rigidBody.velocity.magnitude);
-		Debug.Log("Main - Target: " + targetSpeed);
+		//Debug.Log("Main - magn: " + rigidBody.velocity.magnitude);
+		//Debug.Log("Main - Target: " + targetSpeed);
 	}
 
 	public override void OnObstacleHitted(float decrement)
 	{
+		//Debug.Log("DEC_: " + decrement);
+		//Debug.Log("OLD targetSpeed: " + targetSpeed);
+		//Debug.Log("Deceleration: " + decrement);
 		targetSpeed = Mathf.Clamp01(currentSpeed - decrement);
+		//Debug.Log("NEW targetSpeed: " + targetSpeed);
 
 		if (obstacleHittedCoroutine != null)
 		{
-			Debug.Log("STOPPING CORO");
+			//Debug.Log("STOPPING CORO");
 			StopCoroutine(obstacleHittedCoroutine);
 		}
 		obstacleHittedCoroutine = StartCoroutine(DecrementSpeedOverTime());
@@ -74,13 +78,15 @@ public class PlayerBehaviour : Actor
 
 	IEnumerator DecrementSpeedOverTime()
 	{
-		Debug.Log("Decrementing..");
+		//Debug.Log("Decrementing..");
 		mainRunControl = false;
 
-		while(rigidBody.velocity.magnitude > targetSpeed)
+		yield return new WaitForFixedUpdate();
+
+		while (rigidBody.velocity.magnitude > targetSpeed + .01f)
 		{
-			Debug.Log("Coro - magn: " + rigidBody.velocity.magnitude);
-			Debug.Log("Coro - Target: " + targetSpeed);
+			//Debug.Log("Coro - magn: " + rigidBody.velocity.magnitude);
+			//Debug.Log("Coro - Target: " + targetSpeed);
 			currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, obstacleDec);
 			rigidBody.velocity = transform.forward * currentSpeed;
 			yield return new WaitForFixedUpdate();
@@ -89,7 +95,7 @@ public class PlayerBehaviour : Actor
 		mainRunControl = true;
 		targetSpeed = maxSpeed;
 
-		Debug.Log("Stop Decrementing");
+		//Debug.Log("Stop Decrementing");
 	}
 
 	protected override void ActorDied()

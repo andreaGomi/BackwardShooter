@@ -37,7 +37,9 @@ public class GameManager : MonoBehaviour
 	{
 		float counter = countDown;
 
-		while(counter > 0)
+		yield return null;
+
+		while (counter > 0)
 		{
 			counterText.text = ((int)counter).ToString();
 			yield return null;
