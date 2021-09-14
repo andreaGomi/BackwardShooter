@@ -7,8 +7,11 @@ public abstract class Actor : MonoBehaviour
 	protected bool startRunning;
 	protected float currentHealth;
 	protected float currentSpeed;
+	protected float targetSpeed;
 
 	protected Animator animator;
+	protected Rigidbody rigidBody;
+	public Rigidbody rb { get { return rigidBody; } }
 
 	protected void Awake()
 	{
@@ -20,13 +23,15 @@ public abstract class Actor : MonoBehaviour
 		startRunning = false;
 		currentSpeed = 0f;
 		animator = GetComponent<Animator>();
+		rigidBody = GetComponent<Rigidbody>();
 	}
 
 	void LevelStarted()
 	{
 		startRunning = true;
-		Debug.Log("Actor started");
 	}
+
+	public abstract void OnObstacleHitted(float decrement);
 
 	protected abstract void ActorDied();
 	

@@ -46,7 +46,5 @@ public class GameManager : MonoBehaviour
 
 		counterText.enabled = false;
 		OnLevelStart.Invoke();
-
-		Debug.Log("GM: Start!");
 	}
 }
