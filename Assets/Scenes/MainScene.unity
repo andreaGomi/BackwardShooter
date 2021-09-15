@@ -1779,6 +1779,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1065673427, guid: f493fce846ce7c448a23a3cec5cd0d4a, type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
+    - target: {fileID: 1065673428, guid: f493fce846ce7c448a23a3cec5cd0d4a, type: 3}
+      propertyPath: attributes
+      value: 
+      objectReference: {fileID: 11400000, guid: 82dd4c74cb079d94090496cc3cdd84b7, type: 2}
     - target: {fileID: 2710090863120888137, guid: f493fce846ce7c448a23a3cec5cd0d4a, type: 3}
       propertyPath: m_Name
       value: --- ENEMY_TEMP
@@ -1786,6 +1794,10 @@ PrefabInstance:
     - target: {fileID: 2710090863120888137, guid: f493fce846ce7c448a23a3cec5cd0d4a, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2710090863120888137, guid: f493fce846ce7c448a23a3cec5cd0d4a, type: 3}
+      propertyPath: m_TagString
+      value: Minion
       objectReference: {fileID: 0}
     - target: {fileID: 2710090863120888149, guid: f493fce846ce7c448a23a3cec5cd0d4a, type: 3}
       propertyPath: m_RootOrder

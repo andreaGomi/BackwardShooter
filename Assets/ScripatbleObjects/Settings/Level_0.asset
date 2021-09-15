@@ -16,4 +16,4 @@ MonoBehaviour:
   playerSpeedTraslation: 5
   endlessRun: 0
   levelLength_mt: 50
-  levelCountDown: 2
+  levelCountDown: 0

@@ -17,7 +17,7 @@ public abstract class Actor : MonoBehaviour
 
 	Coroutine obstacleHittedCoroutine = null;
 	bool mainRunControl;
-	float obstacleDec;
+	float obstacleInfluence;
 	float maxSpeed;
 
 	protected void Awake()
@@ -30,12 +30,13 @@ public abstract class Actor : MonoBehaviour
 		currentSpeed = 0f;
 		animator = GetComponent<Animator>();
 		rigidBody = GetComponent<Rigidbody>();
+		obstacleInfluence = LevelManager.Instance.levelSettings.obstacleHitInfluence;
+		GameManager.Instance.OnLevelStart.AddListener(LevelStarted);
 	}
 
 	protected virtual void Start()
 	{
-		obstacleDec = LevelManager.Instance.levelSettings.obstacleHitInfluence;
-		GameManager.Instance.OnLevelStart.AddListener(LevelStarted);
+		
 	}
 
 	private void FixedUpdate()
@@ -45,10 +46,13 @@ public abstract class Actor : MonoBehaviour
 
 		if (mainRunControl)
 			ManageRun();
+
+		//Debug.Log(gameObject.tag + " velocity: " + rigidBody.velocity.magnitude);
 	}
 
 	private void ManageRun()
 	{
+		//Debug.Log(gameObject.tag + " Main control");
 		currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, attributes.acceleration);
 		rigidBody.velocity = transform.forward * currentSpeed;
 		//Debug.Log("Main - magn: " + rigidBody.velocity.magnitude);
@@ -65,7 +69,7 @@ public abstract class Actor : MonoBehaviour
 		//Debug.Log("DEC_: " + decrement);
 		//Debug.Log("OLD targetSpeed: " + targetSpeed);
 		//Debug.Log("Deceleration: " + decrement);
-		float unitDec = Mathf.Clamp(decrement - attributes.thoughness, 0f, decrement);
+		float unitDec = Mathf.Clamp(decrement - attributes.toughness, 0f, decrement);
 		//Debug.Log("DEC: " + unitDec);
 		if (unitDec == 0)
 			return;
@@ -92,7 +96,7 @@ public abstract class Actor : MonoBehaviour
 		{
 			//Debug.Log("Coro - magn: " + rigidBody.velocity.magnitude);
 			//Debug.Log("Coro - Target: " + targetSpeed);
-			currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, obstacleDec);
+			currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, obstacleInfluence);
 			rigidBody.velocity = transform.forward * currentSpeed;
 			yield return new WaitForFixedUpdate();
 		}
