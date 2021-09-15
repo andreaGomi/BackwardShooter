@@ -15,7 +15,7 @@ public abstract class Actor : MonoBehaviour
 
 	protected void Awake()
 	{
-		GameManager.Inistance.OnLevelStart.AddListener(LevelStarted);
+		GameManager.Instance.OnLevelStart.AddListener(LevelStarted);
 	}
 
 	protected virtual void Start()
@@ -33,6 +33,6 @@ public abstract class Actor : MonoBehaviour
 
 	public abstract void OnObstacleHitted(float decrement);
 
-	protected abstract void ActorDied();
+	public abstract void ActorDied();
 	
 }

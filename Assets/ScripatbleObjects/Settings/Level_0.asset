@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17e934c7598a9b34594a815bd3d3e0ec, type: 3}
   m_Name: Level_0
   m_EditorClassIdentifier: 
-  obstacleDeceleration: 0.14
+  obstacleHitInfluence: 0.35
   playerSpeedTraslation: 5
+  endlessRun: 0
+  levelLength_mt: 50
+  levelCountDown: 2

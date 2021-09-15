@@ -2,25 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
 public class FloorBehaviour : MonoBehaviour
 {
-	Rigidbody playerRB = null;
-	Rigidbody thisRB = null;
+	//DEBUG
+	bool follow = true;
 
-	private void Awake()
+	Transform playerTrans = null;
+	float zOffset;
+
+	private void Start()
 	{
-		playerRB = FindObjectOfType<PlayerBehaviour>().rb;
-
-		thisRB = GetComponent<Rigidbody>();
-		thisRB.useGravity = false;
-		thisRB.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+		playerTrans = FindObjectOfType<PlayerBehaviour>().transform;
+		zOffset = playerTrans.position.z - transform.position.z;
 	}
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-		if(playerRB)
-			thisRB.velocity = playerRB.velocity;
-    }
+	private void Update()
+	{
+		if (playerTrans && follow)
+		{
+			zOffset = playerTrans.position.z - transform.position.z;
+			transform.position = transform.position + new Vector3(0f, 0f, zOffset);
+		}
+	}
+
 }

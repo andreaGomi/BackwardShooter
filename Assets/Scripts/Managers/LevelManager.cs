@@ -9,7 +9,7 @@ public class LevelManager : MonoBehaviour
 	public LevelSettingsSO levelSettings { get { return settings; } }
 
 	private static LevelManager levelManager = null;
-	public static LevelManager Inistance
+	public static LevelManager Instance
 	{
 		get
 		{

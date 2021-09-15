@@ -9,7 +9,6 @@ public class WallBehaviour : Obstacle
 
 	protected override void SlowDownActor(Actor actor)
 	{
-		//Debug.Log("Slowing Down " + actor.gameObject.tag + " of " + attributes.toughness);
 		actor.OnObstacleHitted(attributes.toughness);
 	}
 }

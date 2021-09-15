@@ -1,15 +1,10 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
-public class PlayerBehaviour : Actor
+public class MinionBehaviour : Actor
 {
 	[SerializeField] ActorsSO attributes;
-
-	[HideInInspector] public UnityEvent OnPlayerDied;
-	[HideInInspector] public UnityEvent OnRunOver;
 
 	float traslSpeed;
 	float maxSpeed;
@@ -20,24 +15,28 @@ public class PlayerBehaviour : Actor
 
 	// Start is called before the first frame update
 	protected override void Start()
-    {
+	{
 		base.Start();
 		traslSpeed = LevelManager.Instance.levelSettings.playerSpeedTraslation;
-		obstacleDec =  LevelManager.Instance.levelSettings.obstacleHitInfluence;
+		obstacleDec = LevelManager.Instance.levelSettings.obstacleHitInfluence;
 		currentHealth = attributes.health;
 		targetSpeed = attributes.maxSpeed;
 		maxSpeed = attributes.maxSpeed;
 	}
-	
 
-    void Update()
-    {
+	private void OnCollisionEnter(Collision coll)
+	{
+		if(coll.gameObject.TryGetComponent(out PlayerBehaviour player))
+		{
+			player.ActorDied();
+		}
+	}
+
+	void Update()
+	{
 		if (!startRunning)
 			return;
-
-		ManagePlayerInput();
-		//Debug.Log("PLAYER: " + rigidBody.velocity.magnitude);
-    }
+	}
 
 	private void FixedUpdate()
 	{
@@ -46,15 +45,6 @@ public class PlayerBehaviour : Actor
 
 		if (mainRunControl)
 			ManageRun();
-	}
-
-	private void ManagePlayerInput()
-	{
-		float h = Input.GetAxis("Horizontal") * Time.deltaTime * traslSpeed;
-
-		Vector3 newPos = new Vector3(h, 0f, 0f);
-
-		rigidBody.MovePosition(rigidBody.position + newPos);
 	}
 
 	private void ManageRun()
@@ -70,7 +60,12 @@ public class PlayerBehaviour : Actor
 		//Debug.Log("DEC_: " + decrement);
 		//Debug.Log("OLD targetSpeed: " + targetSpeed);
 		//Debug.Log("Deceleration: " + decrement);
-		targetSpeed = Mathf.Clamp01(currentSpeed - decrement);
+		float unitDec = Mathf.Clamp(decrement - attributes.thoughness, 0f, decrement);
+		//Debug.Log("DEC: " + unitDec);
+		if (unitDec == 0)
+			return;
+
+		targetSpeed = Mathf.Clamp01(currentSpeed - unitDec);
 		//Debug.Log("NEW targetSpeed: " + targetSpeed);
 
 		if (obstacleHittedCoroutine != null)
@@ -105,8 +100,6 @@ public class PlayerBehaviour : Actor
 
 	public override void ActorDied()
 	{
-		Debug.Log("Player died");
-		rigidBody.velocity = Vector3.zero;
-		startRunning = false;
+		Debug.Log("Minion died");
 	}
 }

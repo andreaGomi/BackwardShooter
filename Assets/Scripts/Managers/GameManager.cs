@@ -5,13 +5,12 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-	[SerializeField] int countDown;
 	[SerializeField] TextMeshProUGUI counterText;
 
-	public UnityEvent OnLevelStart;
+	[HideInInspector] public UnityEvent OnLevelStart;
 
 	private static GameManager gameManager = null;
-	public static GameManager Inistance
+	public static GameManager Instance
 	{
 		get
 		{
@@ -28,8 +27,11 @@ public class GameManager : MonoBehaviour
 		}
 	}
 
+	float countDown;
+
 	private void Start()
 	{
+		Instance.countDown = LevelManager.Instance.levelSettings.levelCountDown;
 		StartCoroutine(StartCountDown());
 	}
 
@@ -48,5 +50,10 @@ public class GameManager : MonoBehaviour
 
 		counterText.enabled = false;
 		OnLevelStart.Invoke();
+	}
+
+	public static void PlayerDiedListener()
+	{
+
 	}
 }
