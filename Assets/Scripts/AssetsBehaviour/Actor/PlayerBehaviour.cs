@@ -6,47 +6,25 @@ using UnityEngine.Events;
 
 public class PlayerBehaviour : Actor
 {
-	[SerializeField] ActorsSO attributes;
-
 	[HideInInspector] public UnityEvent OnPlayerDied;
 	[HideInInspector] public UnityEvent OnRunOver;
 
 	float traslSpeed;
-	float maxSpeed;
-	Coroutine obstacleHittedCoroutine = null;
-	bool mainRunControl = true;
-
-	float obstacleDec;
 
 	// Start is called before the first frame update
 	protected override void Start()
     {
 		base.Start();
 		traslSpeed = LevelManager.Instance.levelSettings.playerSpeedTraslation;
-		obstacleDec =  LevelManager.Instance.levelSettings.obstacleHitInfluence;
-		currentHealth = attributes.health;
-		targetSpeed = attributes.maxSpeed;
-		maxSpeed = attributes.maxSpeed;
 	}
 	
-
     void Update()
     {
 		if (!startRunning)
 			return;
 
 		ManagePlayerInput();
-		//Debug.Log("PLAYER: " + rigidBody.velocity.magnitude);
     }
-
-	private void FixedUpdate()
-	{
-		if (!startRunning)
-			return;
-
-		if (mainRunControl)
-			ManageRun();
-	}
 
 	private void ManagePlayerInput()
 	{
@@ -56,53 +34,7 @@ public class PlayerBehaviour : Actor
 
 		rigidBody.MovePosition(rigidBody.position + newPos);
 	}
-
-	private void ManageRun()
-	{
-		currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, attributes.acceleration);
-		rigidBody.velocity = transform.forward * currentSpeed;
-		//Debug.Log("Main - magn: " + rigidBody.velocity.magnitude);
-		//Debug.Log("Main - Target: " + targetSpeed);
-	}
-
-	public override void OnObstacleHitted(float decrement)
-	{
-		//Debug.Log("DEC_: " + decrement);
-		//Debug.Log("OLD targetSpeed: " + targetSpeed);
-		//Debug.Log("Deceleration: " + decrement);
-		targetSpeed = Mathf.Clamp01(currentSpeed - decrement);
-		//Debug.Log("NEW targetSpeed: " + targetSpeed);
-
-		if (obstacleHittedCoroutine != null)
-		{
-			//Debug.Log("STOPPING CORO");
-			StopCoroutine(obstacleHittedCoroutine);
-		}
-		obstacleHittedCoroutine = StartCoroutine(DecrementSpeedOverTime());
-	}
-
-	IEnumerator DecrementSpeedOverTime()
-	{
-		//Debug.Log("Decrementing..");
-		mainRunControl = false;
-
-		yield return new WaitForFixedUpdate();
-
-		while (rigidBody.velocity.magnitude > targetSpeed + .1f)
-		{
-			//Debug.Log("Coro - magn: " + rigidBody.velocity.magnitude);
-			//Debug.Log("Coro - Target: " + targetSpeed);
-			currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, obstacleDec);
-			rigidBody.velocity = transform.forward * currentSpeed;
-			yield return new WaitForFixedUpdate();
-		}
-
-		mainRunControl = true;
-		targetSpeed = maxSpeed;
-
-		//Debug.Log("Stop Decrementing");
-	}
-
+	
 	public override void ActorDied()
 	{
 		Debug.Log("Player died");
