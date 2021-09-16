@@ -4,6 +4,9 @@ using UnityEngine;
 
 public abstract class Obstacle : MonoBehaviour
 {
+	[SerializeField] float deltaDistance = 1f;
+	public float DeltaDistance { get { return deltaDistance; } }
+
 	private void OnTriggerEnter(Collider other)
 	{
 		if (other.TryGetComponent(out Actor actor))

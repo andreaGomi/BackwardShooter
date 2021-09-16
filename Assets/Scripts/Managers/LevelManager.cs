@@ -1,12 +1,14 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
 	[Header("Level Settings")]
-	[SerializeField] LevelSettingsSO settings;
-	public LevelSettingsSO levelSettings { get { return settings; } }
+	[SerializeField] LevelSettingsSO levelSettings;
+	[SerializeField] PlayerSettingsSO playerSettings;
+
+	public LevelSettingsSO LevelSettings { get { return levelSettings; } }
+	public PlayerSettingsSO PlayerSettings { get { return playerSettings; } }
 
 	private static LevelManager levelManager = null;
 	public static LevelManager Instance
@@ -15,7 +17,7 @@ public class LevelManager : MonoBehaviour
 		{
 			if (!levelManager)
 			{
-				levelManager = FindObjectOfType<LevelManager>();
+				levelManager = FindObjectOfType(typeof(LevelManager)) as LevelManager;
 
 				if (!levelManager)
 				{

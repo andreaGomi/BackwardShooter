@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Actor", menuName = "ScriptableObjects/Actors")]
-public class ActorsSO : ScriptableObject
+[CreateAssetMenu(fileName = "Actor", menuName = "ScriptableObjects/ActorAttributes")]
+public class ActorsAttributesSO : ScriptableObject
 {
 	public float maxSpeed;
 	[Range(.01f, 1f)] public float acceleration;

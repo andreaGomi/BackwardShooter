@@ -9,10 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbed535976cd9924f876bf4f2b42ba39, type: 3}
-  m_Name: PlayerAttributes
+  m_Script: {fileID: 11500000, guid: 3a1a3ee1d10bbb346a71faa0dba20257, type: 3}
+  m_Name: MinionApproaching
   m_EditorClassIdentifier: 
-  maxSpeed: 6
-  acceleration: 0.1
-  health: 1
-  toughness: 0
+  approachingDistance: 8
+  distanceCheckInterval: 0.3

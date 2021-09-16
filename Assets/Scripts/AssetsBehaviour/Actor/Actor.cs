@@ -1,10 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public abstract class Actor : MonoBehaviour
 {
-	[SerializeField] protected ActorsSO attributes;
+	[SerializeField] protected ActorsAttributesSO attributes;
 
 	protected bool startRunning;
 	protected float currentHealth;
@@ -20,7 +20,7 @@ public abstract class Actor : MonoBehaviour
 	float obstacleInfluence;
 	float maxSpeed;
 
-	protected void Awake()
+	protected virtual void Awake()
 	{
 		mainRunControl = true;
 		startRunning = false;
@@ -30,16 +30,11 @@ public abstract class Actor : MonoBehaviour
 		currentSpeed = 0f;
 		animator = GetComponent<Animator>();
 		rigidBody = GetComponent<Rigidbody>();
-		obstacleInfluence = LevelManager.Instance.levelSettings.obstacleHitInfluence;
+		obstacleInfluence = LevelManager.Instance.LevelSettings.obstacleHitInfluence;
 		GameManager.Instance.OnLevelStart.AddListener(LevelStarted);
 	}
 
-	protected virtual void Start()
-	{
-		
-	}
-
-	private void FixedUpdate()
+	protected virtual void FixedUpdate()
 	{
 		if (!startRunning)
 			return;
@@ -50,7 +45,7 @@ public abstract class Actor : MonoBehaviour
 		//Debug.Log(gameObject.tag + " velocity: " + rigidBody.velocity.magnitude);
 	}
 
-	private void ManageRun()
+	protected virtual void ManageRun()
 	{
 		//Debug.Log(gameObject.tag + " Main control");
 		currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, attributes.acceleration);
@@ -107,5 +102,5 @@ public abstract class Actor : MonoBehaviour
 		//Debug.Log("Stop Decrementing");
 	}
 
-	public abstract void ActorDied();
+	public abstract void ActorDeath();
 }

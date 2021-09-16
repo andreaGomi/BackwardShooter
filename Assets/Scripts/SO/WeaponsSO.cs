@@ -5,4 +5,5 @@ public class WeaponsSO : ScriptableObject
 {
 	public float fireRate;
 	public float damage;
+	public float range;
 }
