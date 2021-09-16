@@ -4,6 +4,9 @@ using UnityEngine;
 
 public abstract class Obstacle : MonoBehaviour
 {
+	[SerializeField] ObstaclesSO attributes;
+	public ObstaclesSO Attributes { get { return attributes; } }
+
 	[SerializeField] float deltaDistance = 1f;
 	public float DeltaDistance { get { return deltaDistance; } }
 
