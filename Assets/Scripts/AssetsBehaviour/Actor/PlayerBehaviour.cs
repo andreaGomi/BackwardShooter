@@ -50,6 +50,7 @@ public class PlayerBehaviour : Actor, IDamagable
 		Debug.Log("Player died");
 		rigidBody.velocity = Vector3.zero;
 		startRunning = false;
+		ActorIsDead = true;
 		shooter.SetShooting(false);
 	}
 

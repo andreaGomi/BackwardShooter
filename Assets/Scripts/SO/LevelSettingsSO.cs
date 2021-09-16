@@ -6,9 +6,6 @@ public class LevelSettingsSO : ScriptableObject
 	[Tooltip("How much strong the obstacle's interpolation influence should be. The higher, the faster an actor will be slowed")]
 	[Range(0.01f, 1f)] public float obstacleHitInfluence;
 	
-	[Tooltip("Should obstacles be spawned in incremental waves or one after another")]
-	public bool waveMode;
-	
 	[Tooltip("Should the level has an end")]
 	public bool endlessRun;
 

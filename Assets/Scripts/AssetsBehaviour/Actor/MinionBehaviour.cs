@@ -58,7 +58,14 @@ public class MinionBehaviour : Actor, IDamagable
 		Debug.Log("Minion died");
 		rigidBody.velocity = Vector3.zero;
 		startRunning = false;
-		shooter.EnemiesList.Remove(this);
+		ActorIsDead = true;
+	}
+
+	public void Resurrect()
+	{
+		currentHealth = attributes.health;
+		startRunning = true;
+		ActorIsDead = false;
 	}
 
 	public void TakeDamage(float damage)

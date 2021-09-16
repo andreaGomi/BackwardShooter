@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
 
+[RequireComponent(typeof(SphereCollider))]
 public class Shooter : MonoBehaviour, IShooter
 {
 	[SerializeField] WeaponsSO weaponStats;
@@ -14,8 +15,31 @@ public class Shooter : MonoBehaviour, IShooter
 	private void Start()
 	{
 		GameManager.Instance.OnLevelStart.AddListener(OnLevelStart);
-		FillList();
+
+		SphereCollider col = GetComponent<SphereCollider>();
+		col.isTrigger = true;
+		col.radius = weaponStats.range;
+
+		//FillList();
 		startShooting = false;
+	}
+
+	private void OnTriggerEnter(Collider other)
+	{
+		if(other.TryGetComponent(out Actor actor))
+		{
+			if (!EnemiesList.Contains(actor))
+				EnemiesList.Add(actor);
+		}
+	}
+
+	private void OnTriggerExit(Collider other)
+	{
+		if (other.TryGetComponent(out Actor actor))
+		{
+			if (EnemiesList.Contains(actor))
+				EnemiesList.Remove(actor);
+		}
 	}
 
 	private void Update()
@@ -23,14 +47,14 @@ public class Shooter : MonoBehaviour, IShooter
 		ManageShooting();
 	}
 
-	private void FillList()
-	{
-		GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-		for (int i = 0; i < enemies.Length; i++)
-		{
-			EnemiesList.Add(enemies[i].GetComponent<Actor>());
-		}
-	}
+	//private void FillList()
+	//{
+	//	GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+	//	for (int i = 0; i < enemies.Length; i++)
+	//	{
+	//		EnemiesList.Add(enemies[i].GetComponent<Actor>());
+	//	}
+	//}
 
 	private void ManageShooting()
 	{
@@ -77,7 +101,6 @@ public class Shooter : MonoBehaviour, IShooter
 
 	public void Shoot(IDamagable dam)
 	{
-		Debug.Log("Pew Pew");
 		dam.TakeDamage(weaponStats.damage);
 
 		//Gestire qua i vari vfx...

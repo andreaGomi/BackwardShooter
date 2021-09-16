@@ -6,6 +6,8 @@ public abstract class Actor : MonoBehaviour
 {
 	[SerializeField] protected ActorsAttributesSO attributes;
 
+	public bool ActorIsDead { get; protected set; } = false;
+
 	protected bool startRunning;
 	protected float currentHealth;
 	protected float currentSpeed;

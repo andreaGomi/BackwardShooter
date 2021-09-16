@@ -15,7 +15,6 @@ public class SpawnManager : MonoBehaviour
 	List<GameObject> enemiesList = new List<GameObject>();
 	bool stopSpawning;
 	bool endlessRun;
-	bool waveMode;
 
 	List<List<GameObject>> obstaclesInstanciated; 
 
@@ -24,20 +23,18 @@ public class SpawnManager : MonoBehaviour
     {
 		stopSpawning = false;
 		endlessRun = LevelManager.Instance.LevelSettings.endlessRun;
-		waveMode = LevelManager.Instance.LevelSettings.waveMode;
 		obstaclesInstanciated = new List<List<GameObject>>();
 		obsDeltaDistances = new float[obstaclePrefab.Length];
 
-		//InitialEnemySpawn();
+		InitialEnemiesSpawn();
 		InitialObstaclesSpawn();
 
-		if(!endlessRun)
-			GameManager.Instance.OnReachingFinishLine.AddListener(OnFinishLineListener);
+		StartCoroutine(ObstacleSpawn());
 
-		if (!waveMode)
-			StartCoroutine(ObstacleSpawn());
+		if (endlessRun)
+			StartCoroutine(EnemiesRespawn());
 		else
-			StartCoroutine(WaveSpawnMode());
+			GameManager.Instance.OnReachingFinishLine.AddListener(OnFinishLineListener);
 	}
 
 	// Update is called once per frame
@@ -98,11 +95,9 @@ public class SpawnManager : MonoBehaviour
 				break;
 
 			float deltaDistance = GameManager.Instance.DistanceWalked - lastSpawnPoint;
+
 			if (obstacleIndex <= 0)
-			{
 				obstacleIndex = UnityEngine.Random.Range(0, obstaclePrefab.Length);
-				Debug.Log(obstacleIndex);
-			}
 
 			if (deltaDistance >= obsDeltaDistances[obstacleIndex])
 			{
@@ -136,9 +131,17 @@ public class SpawnManager : MonoBehaviour
 		obs.transform.position = obstacleSpawnPoint.position;
 		obs.transform.rotation = (spawnToLeftSide) ? Quaternion.Euler(0f, 180f, 0f) : Quaternion.identity;
 	}
-
-	IEnumerator WaveSpawnMode()
+	
+	IEnumerator EnemiesRespawn()
 	{
-		yield return null;
+		foreach(GameObject enemy in enemiesList)
+		{
+			if(enemy.TryGetComponent(out MinionBehaviour minion))
+			{
+				if (minion.ActorIsDead)
+					minion.Resurrect();
+			}
+		}
+		yield return new WaitForSeconds(.5f);
 	}
 }
