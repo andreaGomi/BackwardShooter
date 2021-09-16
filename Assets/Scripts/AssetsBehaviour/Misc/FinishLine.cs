@@ -1,15 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class FinishLine : MonoBehaviour
 {
+	[HideInInspector] public UnityEvent OnLevelEnd; 
+
 	private void OnTriggerEnter(Collider other)
 	{
 		if(other.tag == "Player")
 		{
-			Debug.Log("Finish!");
-			other.GetComponent<Actor>().ActorDeath();
+			OnLevelEnd.Invoke();
 		}
 	}
 }

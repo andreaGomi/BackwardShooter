@@ -108,5 +108,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebddbc0f73abb5643a6a6e76b22c80f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deltaDistance: 15
   attributes: {fileID: 11400000, guid: 72cabf95b4f8cc64d8b17f59120aabe0, type: 2}
+  deltaDistance: 15

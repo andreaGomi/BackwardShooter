@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 512dd4592d51d4940ac0bbdde8d1aa4a, type: 3}
   m_Name: Wall_Large
   m_EditorClassIdentifier: 
-  toughness: 4
+  toughness: 13

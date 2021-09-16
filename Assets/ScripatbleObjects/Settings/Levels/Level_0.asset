@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17e934c7598a9b34594a815bd3d3e0ec, type: 3}
   m_Name: Level_0
   m_EditorClassIdentifier: 
-  obstacleHitInfluence: 0.35
-  waveMode: 0
-  endlessRun: 0
-  numberOfEnemies: 12
-  levelLength_mt: 250
+  obstacleHitInfluence: 0.85
+  endlessRun: 1
+  numberOfEnemies: 5
+  levelLength_mt: 500
   stopFollowPlayerAt_mt: 140
   levelCountDown: 1

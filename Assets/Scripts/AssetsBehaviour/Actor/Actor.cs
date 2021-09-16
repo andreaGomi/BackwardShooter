@@ -44,7 +44,7 @@ public abstract class Actor : MonoBehaviour
 		if (mainRunControl)
 			ManageRun();
 
-		//Debug.Log(gameObject.tag + " velocity: " + rigidBody.velocity.magnitude);
+		Debug.Log(gameObject.tag + " velocity: " + rigidBody.velocity.magnitude);
 	}
 
 	protected virtual void ManageRun()
@@ -71,7 +71,7 @@ public abstract class Actor : MonoBehaviour
 		if (unitDec == 0)
 			return;
 
-		targetSpeed = Mathf.Clamp01(currentSpeed - unitDec);
+		targetSpeed = Mathf.Clamp(currentSpeed - unitDec, 0f, currentSpeed);
 		//Debug.Log("NEW targetSpeed: " + targetSpeed);
 
 		if (obstacleHittedCoroutine != null)
@@ -84,16 +84,16 @@ public abstract class Actor : MonoBehaviour
 
 	IEnumerator DecrementSpeedOverTime()
 	{
-		//Debug.Log("Decrementing..");
+		Debug.Log("Decrementing..");
 		mainRunControl = false;
 
-		yield return new WaitForFixedUpdate();
-
+		//yield return new WaitForFixedUpdate();
+		//Debug.Log("Current Vel: " + rigidBody.velocity.magnitude + " -- Target: " + targetSpeed);
 		while (rigidBody.velocity.magnitude > targetSpeed + .1f)
 		{
 			//Debug.Log("Coro - magn: " + rigidBody.velocity.magnitude);
 			//Debug.Log("Coro - Target: " + targetSpeed);
-			currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, obstacleInfluence);
+			currentSpeed = Mathf.Lerp(targetSpeed, currentSpeed, obstacleInfluence);
 			rigidBody.velocity = transform.forward * currentSpeed;
 			yield return new WaitForFixedUpdate();
 		}
@@ -101,7 +101,7 @@ public abstract class Actor : MonoBehaviour
 		mainRunControl = true;
 		targetSpeed = maxSpeed;
 
-		//Debug.Log("Stop Decrementing");
+		Debug.Log("Stop Decrementing");
 	}
 
 	public abstract void ActorDeath();

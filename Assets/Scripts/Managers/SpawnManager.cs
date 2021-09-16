@@ -2,9 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class SpawnManager : MonoBehaviour
 {
+	[HideInInspector] public UnityEvent OnAllEnemiesDeath;
+
 	[SerializeField] GameObject[] obstaclePrefab;
 	[SerializeField] GameObject[] enemiesPrefab;
 
@@ -34,9 +37,16 @@ public class SpawnManager : MonoBehaviour
 		if (endlessRun)
 			StartCoroutine(EnemiesRespawn());
 		else
-			GameManager.Instance.OnReachingFinishLine.AddListener(OnFinishLineListener);
-	}
+		{
+			GameManager.Instance.OnReachingFinishLine.AddListener(StopSpawning);
+			StartCoroutine(CheckForEnemiesDeath());
+		}
 
+		GameManager.Instance.OnGameOver.AddListener(StopSpawning);
+		GameManager.Instance.OnPlayerWin.AddListener(StopSpawning);
+		FindObjectOfType<PlayerBehaviour>().OnPlayerDied.AddListener(StopSpawning);
+	}
+	
 	// Update is called once per frame
 	void Update()
     {
@@ -78,7 +88,7 @@ public class SpawnManager : MonoBehaviour
 		}
 	}
 
-	private void OnFinishLineListener()
+	private void StopSpawning()
 	{
 		stopSpawning = true;
 	}
@@ -134,14 +144,50 @@ public class SpawnManager : MonoBehaviour
 	
 	IEnumerator EnemiesRespawn()
 	{
-		foreach(GameObject enemy in enemiesList)
+		while (true)
 		{
-			if(enemy.TryGetComponent(out MinionBehaviour minion))
+			if (stopSpawning)
 			{
-				if (minion.ActorIsDead)
-					minion.Resurrect();
+				KillAllEnemies();
+				break;
 			}
+			foreach (GameObject enemy in enemiesList)
+			{
+				if (enemy.TryGetComponent(out MinionBehaviour minion))
+				{
+					if (minion.ActorIsDead)
+						minion.Resurrect();
+				}
+			}
+			yield return new WaitForSeconds(1f);
 		}
-		yield return new WaitForSeconds(.5f);
+	}
+
+	private void KillAllEnemies()
+	{
+		foreach(GameObject o in enemiesList)
+		{
+			o.GetComponent<Actor>().ActorDeath();
+		}
+	}
+
+	IEnumerator CheckForEnemiesDeath()
+	{
+		bool allDeath = false;
+		while (!allDeath)
+		{
+			yield return new WaitForSeconds(1f);
+			bool res = true;
+			foreach(GameObject o in enemiesList)
+			{
+				if(o.TryGetComponent(out MinionBehaviour minion))
+				{
+					res &= minion.ActorIsDead;
+				}
+			}
+			allDeath = res;
+		}
+		Debug.Log("All death");
+		OnAllEnemiesDeath.Invoke();
 	}
 }

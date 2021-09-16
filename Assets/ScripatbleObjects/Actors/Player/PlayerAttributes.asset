@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: PlayerAttributes
   m_EditorClassIdentifier: 
   maxSpeed: 15
-  acceleration: 0.1
+  acceleration: 0.07
   health: 1
   toughness: 0

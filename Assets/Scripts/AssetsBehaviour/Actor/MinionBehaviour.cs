@@ -55,7 +55,6 @@ public class MinionBehaviour : Actor, IDamagable
 
 	public override void ActorDeath()
 	{
-		Debug.Log("Minion died");
 		rigidBody.velocity = Vector3.zero;
 		startRunning = false;
 		ActorIsDead = true;

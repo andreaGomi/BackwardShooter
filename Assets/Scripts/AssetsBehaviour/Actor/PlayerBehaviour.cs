@@ -7,7 +7,6 @@ using UnityEngine.Events;
 public class PlayerBehaviour : Actor, IDamagable
 {
 	[HideInInspector] public UnityEvent OnPlayerDied;
-	[HideInInspector] public UnityEvent OnRunOver;
 
 	float traslSpeed;
 	Vector3 trsl = Vector3.zero;
@@ -18,6 +17,7 @@ public class PlayerBehaviour : Actor, IDamagable
 		base.Awake();
 		shooter = GetComponent<Shooter>();
 		OnPlayerDied.AddListener(ActorDeath);
+		GameManager.Instance.OnPlayerWin.AddListener(ActorDeath);
 	}
 
 	private void Start()
@@ -47,7 +47,6 @@ public class PlayerBehaviour : Actor, IDamagable
 
 	public override void ActorDeath()
 	{
-		Debug.Log("Player died");
 		rigidBody.velocity = Vector3.zero;
 		startRunning = false;
 		ActorIsDead = true;

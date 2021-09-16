@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
 
 	[HideInInspector] public UnityEvent OnLevelStart;
 	[HideInInspector] public UnityEvent OnReachingFinishLine;
+	[HideInInspector] public UnityEvent OnGameOver;
+	[HideInInspector] public UnityEvent OnPlayerWin;
 
 	public float DistanceWalked { get; private set; }
 
@@ -49,6 +51,14 @@ public class GameManager : MonoBehaviour
 			stopFollowDistance = LevelManager.Instance.LevelSettings.levelLength_mt - LevelManager.Instance.LevelSettings.stopFollowPlayerAt_mt;
 			StartCoroutine(CheckDistanceWalked());
 		}
+
+		SpawnManager sm = FindObjectOfType<SpawnManager>();
+		if (sm)
+			sm.OnAllEnemiesDeath.AddListener(PlayerWinListener);
+
+		FinishLine fl = FindObjectOfType<FinishLine>();
+		if (fl)
+			fl.OnLevelEnd.AddListener(PlayerWinListener);
 	}
 
 	IEnumerator StartCountDown()
@@ -75,12 +85,16 @@ public class GameManager : MonoBehaviour
 	private void Update()
 	{
 		DistanceWalked = (playerTransform.position - playerInitPos).magnitude;
-		//Debug.Log(distanceWalked);
 	}
 
-	public static void PlayerDiedListener()
+	private void PlayerDiedListener()
 	{
+		Instance.OnGameOver.Invoke();
+	}
 
+	private void PlayerWinListener()
+	{
+		OnPlayerWin.Invoke();
 	}
 
 	IEnumerator CheckDistanceWalked()
