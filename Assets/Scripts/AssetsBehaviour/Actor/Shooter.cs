@@ -1,21 +1,45 @@
 using UnityEngine;
+using UnityEngine.Events;
 using System.Collections.Generic;
-using System;
 
 public class Shooter : MonoBehaviour, IShooter
 {
 	[SerializeField] WeaponsSO weaponStats;
+
+	UnityAction LevelStartListener;
+	UnityAction StopShootingListener;
 
 	float timer = 0f;
 	public List<Actor> EnemiesList { get; private set; } = new List<Actor>();
 
 	bool startShooting;
 
+	private void Awake()
+	{
+		LevelStartListener += EnableShooting;
+		StopShootingListener += StopShooting;
+	}
+
 	private void Start()
 	{
-		GameManager.Instance.OnLevelStart.AddListener(LevelStartListener);
 		startShooting = false;
 		FetchEnemies();
+	}
+
+	private void OnEnable()
+	{
+		EventManager.StartListening(EventsNameList.LevelStarted, LevelStartListener);
+		EventManager.StartListening(EventsNameList.PlayerDeath, StopShootingListener);
+		EventManager.StartListening(EventsNameList.AllEnemiesDeath, StopShootingListener);
+		EventManager.StartListening(EventsNameList.LevelComplete, StopShootingListener);
+	}
+
+	private void OnDisable()
+	{
+		EventManager.StopListening(EventsNameList.LevelStarted, LevelStartListener);
+		EventManager.StopListening(EventsNameList.PlayerDeath, StopShootingListener);
+		EventManager.StopListening(EventsNameList.AllEnemiesDeath, StopShootingListener);
+		EventManager.StopListening(EventsNameList.LevelComplete, StopShootingListener);
 	}
 
 	private void Update()
@@ -65,15 +89,20 @@ public class Shooter : MonoBehaviour, IShooter
 		return res;
 	}
 
-	private void LevelStartListener()
+	private void EnableShooting()
 	{
 		startShooting = true;
 	}
 
-	public void SetShooting(bool val = true)
+	private void StopShooting()
 	{
-		startShooting = val;
+		startShooting = false;
 	}
+
+	//public void SetShooting(bool val = true)
+	//{
+	//	startShooting = val;
+	//}
 
 	public void Shoot(IDamagable dam)
 	{

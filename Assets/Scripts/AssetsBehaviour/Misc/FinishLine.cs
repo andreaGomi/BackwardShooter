@@ -9,7 +9,7 @@ public class FinishLine : MonoBehaviour
 	{
 		if(other.tag == "Player")
 		{
-			OnLevelEnd.Invoke();
+			EventManager.TriggerEvent(EventsNameList.LevelComplete);
 		}
 	}
 }

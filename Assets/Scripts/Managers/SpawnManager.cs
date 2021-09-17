@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,20 +5,28 @@ using UnityEngine.Events;
 
 public class SpawnManager : MonoBehaviour
 {
-	[HideInInspector] public UnityEvent OnAllEnemiesDeath;
-
 	[SerializeField] GameObject[] obstaclePrefab;
 	[SerializeField] GameObject[] enemiesPrefab;
 
 	[SerializeField] Transform obstacleSpawnPoint;
 	[SerializeField] Transform enemiesSpawnPoint;
 
+	UnityAction StopSpawningListener;
+	UnityAction UpdateEnemiesCounterListener;
+
 	float[] obsDeltaDistances;
 	List<GameObject> enemiesList = new List<GameObject>();
 	bool stopSpawning;
 	bool endlessRun;
+	int enemiesDeathCounter;
 
-	List<List<GameObject>> obstaclesInstanciated; 
+	List<List<GameObject>> obstaclesInstanciated;
+
+	private void Awake()
+	{
+		StopSpawningListener += StopSpawning;
+		UpdateEnemiesCounterListener += UpdateEnemiesDeathCounter;
+	}
 
 	// Start is called before the first frame update
 	void Start()
@@ -28,6 +35,7 @@ public class SpawnManager : MonoBehaviour
 		endlessRun = LevelManager.Instance.LevelSettings.endlessRun;
 		obstaclesInstanciated = new List<List<GameObject>>();
 		obsDeltaDistances = new float[obstaclePrefab.Length];
+		enemiesDeathCounter = 0;
 
 		InitialEnemiesSpawn();
 		InitialObstaclesSpawn();
@@ -36,22 +44,40 @@ public class SpawnManager : MonoBehaviour
 
 		if (endlessRun)
 			StartCoroutine(EnemiesRespawn());
-		else
-		{
-			GameManager.Instance.OnReachingFinishLine.AddListener(StopSpawning);
-			StartCoroutine(CheckForEnemiesDeath());
-		}
-
-		GameManager.Instance.OnGameOver.AddListener(StopSpawning);
-		GameManager.Instance.OnPlayerWin.AddListener(StopSpawning);
-		FindObjectOfType<PlayerBehaviour>().OnPlayerDied.AddListener(StopSpawning);
+		
 	}
-	
-	// Update is called once per frame
-	void Update()
-    {
 
-    }
+	private void OnEnable()
+	{
+		if (!endlessRun)
+		{
+			EventManager.StartListening(EventsNameList.ApproachingFinishLine, StopSpawningListener);
+			EventManager.StartListening(EventsNameList.LevelComplete, StopSpawningListener);
+			EventManager.StartListening(EventsNameList.AllEnemiesDeath, StopSpawningListener);
+			EventManager.StartListening(EventsNameList.AnEnemyIsDead, UpdateEnemiesCounterListener);
+		}
+		EventManager.StartListening(EventsNameList.PlayerDeath, StopSpawningListener);
+		
+	}
+
+	private void OnDisable()
+	{
+		if (!endlessRun)
+		{
+			EventManager.StopListening(EventsNameList.ApproachingFinishLine, StopSpawningListener);
+			EventManager.StopListening(EventsNameList.LevelComplete, StopSpawningListener);
+			EventManager.StopListening(EventsNameList.AllEnemiesDeath, StopSpawningListener);
+			EventManager.StopListening(EventsNameList.AnEnemyIsDead, UpdateEnemiesCounterListener);
+		}
+		EventManager.StopListening(EventsNameList.PlayerDeath, StopSpawningListener);
+	}
+
+	private void UpdateEnemiesDeathCounter()
+	{
+		enemiesDeathCounter++;
+		if (enemiesDeathCounter == enemiesList.Count)
+			EventManager.TriggerEvent(EventsNameList.AllEnemiesDeath);
+	}
 
 	private void InitialEnemiesSpawn()
 	{
@@ -90,7 +116,9 @@ public class SpawnManager : MonoBehaviour
 
 	private void StopSpawning()
 	{
+		Debug.Log("Stop Spawning Lister");
 		stopSpawning = true;
+		StopAllCoroutines();
 	}
 
 	IEnumerator ObstacleSpawn()
@@ -103,6 +131,8 @@ public class SpawnManager : MonoBehaviour
 		{
 			if (stopSpawning)
 				break;
+			Debug.Log("Stop Spawning: " + stopSpawning);
+			yield return null;
 
 			float deltaDistance = GameManager.Instance.DistanceWalked - lastSpawnPoint;
 
@@ -130,8 +160,6 @@ public class SpawnManager : MonoBehaviour
 				enumerator.Reset();
 				obstacleIndex = 0;
 			}
-
-			yield return null;
 		}
 		
 	}
@@ -147,10 +175,8 @@ public class SpawnManager : MonoBehaviour
 		while (true)
 		{
 			if (stopSpawning)
-			{
-				StopAllEnemies();
 				break;
-			}
+
 			foreach (GameObject enemy in enemiesList)
 			{
 				if (enemy.TryGetComponent(out MinionBehaviour minion))
@@ -161,35 +187,5 @@ public class SpawnManager : MonoBehaviour
 			}
 			yield return new WaitForSeconds(1f);
 		}
-	}
-
-	private void StopAllEnemies()
-	{
-		StopAllCoroutines();
-		foreach(GameObject o in enemiesList)
-		{
-			o.GetComponent<Actor>().StopRunning();
-			Debug.Log("Stop");
-		}
-	}
-
-	IEnumerator CheckForEnemiesDeath()
-	{
-		bool allDeath = false;
-		while (!allDeath)
-		{
-			yield return new WaitForSeconds(1f);
-			bool res = true;
-			foreach(GameObject o in enemiesList)
-			{
-				if(o.TryGetComponent(out MinionBehaviour minion))
-				{
-					res &= minion.ActorIsDead;
-				}
-			}
-			allDeath = res;
-		}
-		Debug.Log("All death");
-		OnAllEnemiesDeath.Invoke();
 	}
 }

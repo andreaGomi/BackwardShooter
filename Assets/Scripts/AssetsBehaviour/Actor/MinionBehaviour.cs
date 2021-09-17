@@ -52,18 +52,19 @@ public class MinionBehaviour : Actor, IDamagable
 		}
 	}
 
-	public override void ActorDeath()
+	protected override void ActorDeath()
 	{
 		rigidBody.velocity = Vector3.zero;
 		startRunning = false;
 		ActorIsDead = true;
+		EventManager.TriggerEvent(EventsNameList.AnEnemyIsDead);
 	}
 
 	public void Resurrect()
 	{
 		currentHealth = attributes.health;
-		startRunning = true;
 		ActorIsDead = false;
+		startRunning = true;
 	}
 
 	public void TakeDamage(float damage)

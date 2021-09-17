@@ -1,21 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class TargetFollower : MonoBehaviour
 {
 	[Tooltip("Leave empty to make the script seeks the player")]
 	[SerializeField] string tagToFollow = "";
 	[SerializeField] bool startListenToFinishLineEvent = true;
+	UnityAction FinishLineListener;
 
 	Transform target;
 	float zOffset;
 	bool follow = true;
 
+
 	private void Awake()
 	{
-		if(startListenToFinishLineEvent)
-			GameManager.Instance.OnReachingFinishLine.AddListener(StopFollowTarget);
+		FinishLineListener += StopFollowTarget;
 	}
 
 	// Start is called before the first frame update
@@ -30,14 +30,26 @@ public class TargetFollower : MonoBehaviour
 				zOffset = transform.position.z - target.position.z;
 			}
 		}
-		catch(UnityException e)
+		catch(UnityException)
 		{
 			Debug.LogError("No Object found with tag \"" + tagToFollow + "\".");
 		}
 	}
 
-    // Update is called once per frame
-    void Update()
+	private void OnEnable()
+	{
+		if (startListenToFinishLineEvent)
+			EventManager.StartListening(EventsNameList.ApproachingFinishLine, FinishLineListener);
+	}
+
+	private void OnDisable()
+	{
+		if (startListenToFinishLineEvent)
+			EventManager.StopListening(EventsNameList.ApproachingFinishLine, FinishLineListener);
+	}
+
+	// Update is called once per frame
+	void Update()
     {
 		if (target && follow)
 		{

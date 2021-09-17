@@ -7,11 +7,6 @@ public class GameManager : MonoBehaviour
 {
 	[SerializeField] TextMeshProUGUI counterText;
 
-	[HideInInspector] public UnityEvent OnLevelStart;
-	[HideInInspector] public UnityEvent OnReachingFinishLine;
-	[HideInInspector] public UnityEvent OnGameOver;
-	[HideInInspector] public UnityEvent OnPlayerWin;
-
 	public float DistanceWalked { get; private set; }
 
 	private static GameManager gameManager = null;
@@ -45,24 +40,18 @@ public class GameManager : MonoBehaviour
 
 		Instance.playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
 		Instance.playerInitPos = playerTransform.position;
+	}
 
+	private void Start()
+	{
 		if (!LevelManager.Instance.LevelSettings.endlessRun)
 		{
-			stopFollowDistance = LevelManager.Instance.LevelSettings.levelLength_mt - LevelManager.Instance.LevelSettings.stopFollowPlayerAt_mt;
+			stopFollowDistance = Mathf.Clamp(LevelManager.Instance.LevelSettings.levelLength_mt - LevelManager.Instance.LevelSettings.stopFollowPlayerAt_mt,
+											0f,
+											LevelManager.Instance.LevelSettings.levelLength_mt);
+
 			StartCoroutine(CheckDistanceWalked());
 		}
-
-		SpawnManager sm = FindObjectOfType<SpawnManager>();
-		if (sm)
-			sm.OnAllEnemiesDeath.AddListener(PlayerWinListener);
-
-		FinishLine fl = FindObjectOfType<FinishLine>();
-		if (fl)
-			fl.OnLevelEnd.AddListener(PlayerWinListener);
-
-		PlayerBehaviour pl = FindObjectOfType<PlayerBehaviour>();
-		if (pl)
-			pl.OnPlayerDied.AddListener(PlayerDiedListener);
 	}
 
 	IEnumerator StartCountDown()
@@ -83,22 +72,12 @@ public class GameManager : MonoBehaviour
 		yield return new WaitForSeconds(.5f);
 
 		counterText.enabled = false;
-		OnLevelStart.Invoke();
+		EventManager.TriggerEvent(EventsNameList.LevelStarted);
 	}
 
 	private void Update()
 	{
 		DistanceWalked = (playerTransform.position - playerInitPos).magnitude;
-	}
-
-	private void PlayerDiedListener()
-	{
-		Instance.OnGameOver.Invoke();
-	}
-
-	private void PlayerWinListener()
-	{
-		OnPlayerWin.Invoke();
 	}
 
 	IEnumerator CheckDistanceWalked()
@@ -107,7 +86,7 @@ public class GameManager : MonoBehaviour
 		{
 			if(DistanceWalked >= stopFollowDistance)
 			{
-				OnReachingFinishLine.Invoke();
+				EventManager.TriggerEvent(EventsNameList.ApproachingFinishLine);
 				break;
 			}
 

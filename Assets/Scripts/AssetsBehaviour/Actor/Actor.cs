@@ -8,6 +8,9 @@ public abstract class Actor : MonoBehaviour
 
 	public bool ActorIsDead { get; protected set; } = false;
 
+	UnityAction LevelStartListener;
+	UnityAction StopActorListener;
+
 	protected bool startRunning;
 	protected float currentHealth;
 	protected float currentSpeed;
@@ -33,7 +36,25 @@ public abstract class Actor : MonoBehaviour
 		animator = GetComponent<Animator>();
 		rigidBody = GetComponent<Rigidbody>();
 		obstacleInfluence = LevelManager.Instance.LevelSettings.obstacleHitInfluence;
-		GameManager.Instance.OnLevelStart.AddListener(LevelStarted);
+
+		LevelStartListener += LevelStarted;
+		StopActorListener += StopRunning;
+	}
+
+	private void OnEnable()
+	{
+		EventManager.StartListening(EventsNameList.LevelStarted, LevelStartListener);
+		EventManager.StartListening(EventsNameList.PlayerDeath, StopActorListener);
+		EventManager.StartListening(EventsNameList.AllEnemiesDeath, StopActorListener);
+		EventManager.StartListening(EventsNameList.LevelComplete, StopActorListener);
+	}
+
+	private void OnDisable()
+	{
+		EventManager.StopListening(EventsNameList.LevelStarted, LevelStartListener);
+		EventManager.StopListening(EventsNameList.PlayerDeath, StopActorListener);
+		EventManager.StopListening(EventsNameList.AllEnemiesDeath, StopActorListener);
+		EventManager.StopListening(EventsNameList.LevelComplete, StopActorListener);
 	}
 
 	protected virtual void FixedUpdate()
@@ -103,7 +124,7 @@ public abstract class Actor : MonoBehaviour
 		Debug.Log("Stop Decrementing");
 	}
 
-	public abstract void ActorDeath();
+	protected abstract void ActorDeath();
 
 	public void StopRunning()
 	{
