@@ -128,7 +128,7 @@ public abstract class Actor : MonoBehaviour
 
 	public void StopRunning()
 	{
-		Debug.Log("Chiamarta a stop");
+		//Debug.Log("Chiamarta a stop");
 		startRunning = false;
 		rb.velocity = Vector3.zero;
 	}

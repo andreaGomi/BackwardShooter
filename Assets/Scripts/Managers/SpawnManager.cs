@@ -24,6 +24,7 @@ public class SpawnManager : MonoBehaviour
 
 	private void Awake()
 	{
+		endlessRun = LevelManager.Instance.LevelSettings.endlessRun;
 		StopSpawningListener += StopSpawning;
 		UpdateEnemiesCounterListener += UpdateEnemiesDeathCounter;
 	}
@@ -32,7 +33,7 @@ public class SpawnManager : MonoBehaviour
 	void Start()
     {
 		stopSpawning = false;
-		endlessRun = LevelManager.Instance.LevelSettings.endlessRun;
+		
 		obstaclesInstanciated = new List<List<GameObject>>();
 		obsDeltaDistances = new float[obstaclePrefab.Length];
 		enemiesDeathCounter = 0;
@@ -74,8 +75,9 @@ public class SpawnManager : MonoBehaviour
 
 	private void UpdateEnemiesDeathCounter()
 	{
+		Debug.Log("Updating enemies count"); 
 		enemiesDeathCounter++;
-		if (enemiesDeathCounter == enemiesList.Count)
+		if (enemiesDeathCounter == enemiesList.Count && !endlessRun)
 			EventManager.TriggerEvent(EventsNameList.AllEnemiesDeath);
 	}
 
@@ -116,7 +118,6 @@ public class SpawnManager : MonoBehaviour
 
 	private void StopSpawning()
 	{
-		Debug.Log("Stop Spawning Lister");
 		stopSpawning = true;
 		StopAllCoroutines();
 	}
@@ -131,7 +132,7 @@ public class SpawnManager : MonoBehaviour
 		{
 			if (stopSpawning)
 				break;
-			Debug.Log("Stop Spawning: " + stopSpawning);
+
 			yield return null;
 
 			float deltaDistance = GameManager.Instance.DistanceWalked - lastSpawnPoint;
