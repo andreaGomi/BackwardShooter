@@ -59,6 +59,10 @@ public class GameManager : MonoBehaviour
 		FinishLine fl = FindObjectOfType<FinishLine>();
 		if (fl)
 			fl.OnLevelEnd.AddListener(PlayerWinListener);
+
+		PlayerBehaviour pl = FindObjectOfType<PlayerBehaviour>();
+		if (pl)
+			pl.OnPlayerDied.AddListener(PlayerDiedListener);
 	}
 
 	IEnumerator StartCountDown()

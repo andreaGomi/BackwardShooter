@@ -17,7 +17,6 @@ public class MinionBehaviour : Actor, IDamagable
 		{
 			shooter = player.GetComponent<Shooter>();
 			distance = player.transform.position - transform.position;
-			player.OnPlayerDied.AddListener(ActorDeath);
 			StartCoroutine(CheckPlayerDistance());
 		}
 		else

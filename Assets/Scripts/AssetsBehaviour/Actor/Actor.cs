@@ -43,8 +43,7 @@ public abstract class Actor : MonoBehaviour
 
 		if (mainRunControl)
 			ManageRun();
-
-		Debug.Log(gameObject.tag + " velocity: " + rigidBody.velocity.magnitude);
+		
 	}
 
 	protected virtual void ManageRun()
@@ -105,4 +104,11 @@ public abstract class Actor : MonoBehaviour
 	}
 
 	public abstract void ActorDeath();
+
+	public void StopRunning()
+	{
+		Debug.Log("Chiamarta a stop");
+		startRunning = false;
+		rb.velocity = Vector3.zero;
+	}
 }

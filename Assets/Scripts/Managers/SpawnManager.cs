@@ -148,7 +148,7 @@ public class SpawnManager : MonoBehaviour
 		{
 			if (stopSpawning)
 			{
-				KillAllEnemies();
+				StopAllEnemies();
 				break;
 			}
 			foreach (GameObject enemy in enemiesList)
@@ -163,11 +163,13 @@ public class SpawnManager : MonoBehaviour
 		}
 	}
 
-	private void KillAllEnemies()
+	private void StopAllEnemies()
 	{
+		StopAllCoroutines();
 		foreach(GameObject o in enemiesList)
 		{
-			o.GetComponent<Actor>().ActorDeath();
+			o.GetComponent<Actor>().StopRunning();
+			Debug.Log("Stop");
 		}
 	}
 
