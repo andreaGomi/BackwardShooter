@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   obstacleHitInfluence: 0.85
   endlessRun: 1
-  numberOfEnemies: 4
+  numberOfEnemies: 0
   levelLength_mt: 250
   stopFollowPlayerAt_mt: 130
   levelCountDown: 1
