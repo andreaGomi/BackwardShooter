@@ -6,7 +6,6 @@ public class PlayerBehaviour : Actor, IDamagable
 	Shooter shooter;
 
 	Vector3 lastVelocity;
-	bool aiming;
 
 	protected override void Awake()
 	{
@@ -17,18 +16,6 @@ public class PlayerBehaviour : Actor, IDamagable
 	private void Start()
     {
 		lastVelocity = RigidBody.velocity;
-		aiming = true;
-	}
-
-	private void OnAnimatorIK(int layerIndex)
-	{
-		if (!aiming)
-			return;
-		Debug.Log("HEY");
-		animator.SetIKPosition(AvatarIKGoal.LeftHand, shooter.GetNearestEnemytransform().position);
-		animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1f);
-		animator.SetIKPosition(AvatarIKGoal.RightHand, shooter.GetNearestEnemytransform().position);
-		animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1f);
 	}
 
 	void Update()
@@ -51,7 +38,6 @@ public class PlayerBehaviour : Actor, IDamagable
 		rigidBody.isKinematic = true;
 		startRunning = false;
 		ActorIsDead = true;
-		aiming = false;
 		EventManager.TriggerEvent(EventsNameList.PlayerDeath);
 		GetComponent<CapsuleCollider>().enabled = false;
 		animator.SetTrigger("Die");

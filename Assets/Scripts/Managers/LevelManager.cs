@@ -30,4 +30,9 @@ public class LevelManager : MonoBehaviour
 	{
 		SceneManager.LoadScene(0);
 	}
+
+	public void QuitApplication()
+	{
+		Application.Quit();
+	}
 }

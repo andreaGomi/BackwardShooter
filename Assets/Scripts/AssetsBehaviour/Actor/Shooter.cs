@@ -113,6 +113,9 @@ public class Shooter : MonoBehaviour, IShooter
 
 	public Transform GetNearestEnemytransform()
 	{
-		return EnemiesList[NearestEnemyIndex].transform;
+		if (EnemiesList.Count > 0)
+			return EnemiesList[NearestEnemyIndex].transform;
+		else
+			return null;
 	}
 }
