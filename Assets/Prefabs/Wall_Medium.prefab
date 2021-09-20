@@ -109,4 +109,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attributes: {fileID: 11400000, guid: 72cabf95b4f8cc64d8b17f59120aabe0, type: 2}
-  deltaDistance: 15
+  deltaDistance: 8

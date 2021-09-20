@@ -75,7 +75,7 @@ public class SpawnManager : MonoBehaviour
 
 	private void UpdateEnemiesDeathCounter()
 	{
-		Debug.Log("Updating enemies count"); 
+		//Debug.Log("Updating enemies count"); 
 		enemiesDeathCounter++;
 		if (enemiesDeathCounter == enemiesList.Count && !endlessRun)
 			EventManager.TriggerEvent(EventsNameList.AllEnemiesDeath);
@@ -87,7 +87,7 @@ public class SpawnManager : MonoBehaviour
 		int rows = Mathf.FloorToInt(enemiesCount / 3);
 		int res = enemiesCount % 3;
 
-		Vector3 spawnPos = enemiesSpawnPoint.position + new Vector3(2.5f, 1f, 2.5f);
+		Vector3 spawnPos = enemiesSpawnPoint.position + new Vector3(2.5f, 0f, 2.5f);
 		for (int i = 0; i < rows; i++)
 		{
 			for(int j = 0; j < 3; j++)

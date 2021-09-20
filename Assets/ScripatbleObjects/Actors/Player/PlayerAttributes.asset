@@ -15,4 +15,4 @@ MonoBehaviour:
   maxSpeed: 15
   acceleration: 0.07
   health: 1
-  toughness: 15
+  toughness: 20

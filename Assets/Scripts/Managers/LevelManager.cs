@@ -1,14 +1,12 @@
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
 	[Header("Level Settings")]
 	[SerializeField] LevelSettingsSO levelSettings;
-	[SerializeField] PlayerSettingsSO playerSettings;
 
 	public LevelSettingsSO LevelSettings { get { return levelSettings; } }
-	public PlayerSettingsSO PlayerSettings { get { return playerSettings; } }
 
 	private static LevelManager levelManager = null;
 	public static LevelManager Instance
@@ -28,5 +26,8 @@ public class LevelManager : MonoBehaviour
 		}
 	}
 
-
+	public void ReloadLevel()
+	{
+		SceneManager.LoadScene(0);
+	}
 }

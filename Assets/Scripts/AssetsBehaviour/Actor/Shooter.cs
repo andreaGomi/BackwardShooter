@@ -11,6 +11,7 @@ public class Shooter : MonoBehaviour, IShooter
 
 	float timer = 0f;
 	public List<Actor> EnemiesList { get; private set; } = new List<Actor>();
+	public int NearestEnemyIndex { get; private set; } = 0;
 
 	bool startShooting;
 
@@ -77,6 +78,7 @@ public class Shooter : MonoBehaviour, IShooter
 	{
 		float lastDistance = float.MaxValue;
 		Actor res = null;
+		int index = 0;
 		foreach(Actor a in EnemiesList)
 		{
 			float distance = (a.gameObject.GetComponent<Transform>().position - transform.position).magnitude;
@@ -84,7 +86,10 @@ public class Shooter : MonoBehaviour, IShooter
 			{
 				res = a;
 				lastDistance = distance;
+				NearestEnemyIndex = index;
 			}
+
+			index++;
 		}
 		return res;
 	}
@@ -99,15 +104,15 @@ public class Shooter : MonoBehaviour, IShooter
 		startShooting = false;
 	}
 
-	//public void SetShooting(bool val = true)
-	//{
-	//	startShooting = val;
-	//}
-
 	public void Shoot(IDamagable dam)
 	{
 		dam.TakeDamage(weaponStats.damage);
 
 		//Gestire qua i vari vfx...
+	}
+
+	public Transform GetNearestEnemytransform()
+	{
+		return EnemiesList[NearestEnemyIndex].transform;
 	}
 }

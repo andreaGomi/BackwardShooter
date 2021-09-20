@@ -1,73 +1,63 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class UserInputHandler : MonoBehaviour
 {
+	UnityAction StartLevelListener;
+	UnityAction GameOverListener;
 
-#if UNITY_ANDROID || UNITY_IOS
-	Touch touch;
-#endif
-#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
-	Vector3 firstTouch = Vector3.zero;
-#endif
-
-	float inputMovement;
+	[SerializeField] Joystick joystick;
+	
 	float trslSpeed;
 	PlayerBehaviour playerScript;
-	float screenWidth;
 
-    // Start is called before the first frame update
-    void Start()
+	private void Awake()
+	{
+		StartLevelListener += EnableJoystick;
+		GameOverListener += DisableJoystick;
+	}
+
+	void Start()
     {
-		inputMovement = 0f;
-		trslSpeed = LevelManager.Instance.PlayerSettings.playerSpeedTraslation;
-		screenWidth = Screen.width/10;
 		playerScript = GetComponent<PlayerBehaviour>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-#if UNITY_ANDROID || UNITY_IOS
-		ManageMobileInput();
-#endif
-#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
-		ManageDesktopInput();
-#endif
+	private void OnEnable()
+	{
+		EventManager.StartListening(EventsNameList.LevelStarted, StartLevelListener);
+		EventManager.StartListening(EventsNameList.PlayerDeath, GameOverListener);
+		EventManager.StartListening(EventsNameList.AllEnemiesDeath, GameOverListener);
+		EventManager.StartListening(EventsNameList.LevelComplete, GameOverListener);
 	}
 
-#if UNITY_ANDROID || UNITY_IOS
+	private void OnDisable()
+	{
+		EventManager.StopListening(EventsNameList.LevelStarted, StartLevelListener);
+		EventManager.StopListening(EventsNameList.PlayerDeath, GameOverListener);
+		EventManager.StopListening(EventsNameList.AllEnemiesDeath, GameOverListener);
+		EventManager.StopListening(EventsNameList.LevelComplete, GameOverListener);
+	}
+
+	// Update is called once per frame
+	void Update()
+    {
+		if (joystick)
+			ManageMobileInput();
+	}
+
 	private void ManageMobileInput()
 	{
-		if(Input.touchCount > 0)
-		{
-			touch = Input.GetTouch(0);
-		}
+		playerScript.Traslation = new Vector3(joystick.Horizontal, 0f, 0f);
 	}
-#endif
-#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
-	private void ManageDesktopInput()
+
+	private void EnableJoystick()
 	{
-		if (Input.GetMouseButton(0))
-		{
-			if(firstTouch == Vector3.zero)
-			{
-				firstTouch = Input.mousePosition;
-			}
-			else
-			{
-				Vector3 deltaPos = Input.mousePosition - firstTouch;
-				deltaPos /= screenWidth * trslSpeed * Time.deltaTime;
-				deltaPos.x = Mathf.Clamp(deltaPos.x, -1f, 1f);
-				deltaPos.y = 0f;
-				deltaPos.z = 0f;
-				playerScript.Traslation = deltaPos;
-			}
-		}
-		else
-		{
-			firstTouch = Vector3.zero;
-		}
+		joystick.gameObject.SetActive(true);
 	}
-#endif
+
+	private void DisableJoystick()
+	{
+		joystick.gameObject.SetActive(false);
+	}
 }

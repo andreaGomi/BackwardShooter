@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class MinionBehaviour : Actor, IDamagable
 {
@@ -9,9 +10,13 @@ public class MinionBehaviour : Actor, IDamagable
 	Vector3 distance;
 	bool tryReachPlayer = false;
 	Shooter shooter = null;
+	//MeshRenderer rend;
 
 	private void Start()
 	{
+		//rend = GetComponentInChildren<MeshRenderer>();
+		//rend.material.color = Color.Lerp(Color.red, Color.green, currentHealth / attributes.health);
+
 		player = FindObjectOfType<PlayerBehaviour>();
 		if (player)
 		{
@@ -55,14 +60,18 @@ public class MinionBehaviour : Actor, IDamagable
 	protected override void ActorDeath()
 	{
 		rigidBody.velocity = Vector3.zero;
+		rigidBody.isKinematic = true;
 		startRunning = false;
 		ActorIsDead = true;
 		EventManager.TriggerEvent(EventsNameList.AnEnemyIsDead);
+		GetComponent<CapsuleCollider>().enabled = false;
+		animator.SetTrigger("Die");
 	}
 
 	public void Resurrect()
 	{
 		currentHealth = attributes.health;
+		//rend.material.color = Color.Lerp(Color.red, Color.green, currentHealth / attributes.health);
 		ActorIsDead = false;
 		startRunning = true;
 	}
@@ -70,8 +79,8 @@ public class MinionBehaviour : Actor, IDamagable
 	public void TakeDamage(float damage)
 	{
 		currentHealth -= damage;
-
-		GetComponent<MeshRenderer>().material.color = Color.Lerp(Color.red, Color.green, currentHealth / attributes.health);
+		
+		//rend.material.color = Color.Lerp(Color.red, Color.green, currentHealth / attributes.health);
 
 		if(currentHealth <= 0)
 		{

@@ -18,7 +18,7 @@ public abstract class Actor : MonoBehaviour
 
 	protected Animator animator;
 	protected Rigidbody rigidBody;
-	public Rigidbody rb { get { return rigidBody; } }
+	public Rigidbody RigidBody { get { return rigidBody; } }
 
 	Coroutine obstacleHittedCoroutine = null;
 	bool mainRunControl;
@@ -33,9 +33,11 @@ public abstract class Actor : MonoBehaviour
 		targetSpeed = attributes.maxSpeed;
 		maxSpeed = attributes.maxSpeed;
 		currentSpeed = 0f;
-		animator = GetComponent<Animator>();
+		animator = GetComponentInChildren<Animator>();
 		rigidBody = GetComponent<Rigidbody>();
-		obstacleInfluence = LevelManager.Instance.LevelSettings.obstacleHitInfluence;
+
+		if(LevelManager.Instance)
+			obstacleInfluence = LevelManager.Instance.LevelSettings.obstacleHitInfluence;
 
 		LevelStartListener += LevelStarted;
 		StopActorListener += StopRunning;
@@ -104,7 +106,7 @@ public abstract class Actor : MonoBehaviour
 
 	IEnumerator DecrementSpeedOverTime()
 	{
-		Debug.Log("Decrementing..");
+		//Debug.Log("Decrementing..");
 		mainRunControl = false;
 
 		//yield return new WaitForFixedUpdate();
@@ -121,7 +123,7 @@ public abstract class Actor : MonoBehaviour
 		mainRunControl = true;
 		targetSpeed = maxSpeed;
 
-		Debug.Log("Stop Decrementing");
+		//Debug.Log("Stop Decrementing");
 	}
 
 	protected abstract void ActorDeath();
@@ -130,6 +132,9 @@ public abstract class Actor : MonoBehaviour
 	{
 		//Debug.Log("Chiamarta a stop");
 		startRunning = false;
-		rb.velocity = Vector3.zero;
+		rigidBody.velocity = Vector3.zero;
+		rigidBody.isKinematic = true;
+		animator.SetTrigger("Win");
 	}
+
 }
