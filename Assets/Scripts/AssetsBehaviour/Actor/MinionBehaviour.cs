@@ -1,26 +1,24 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 
+/// <summary>
+/// Specialization of class Actor, representing an enemy
+/// </summary>
 public class MinionBehaviour : Actor, IDamagable
 {
+	//approaching settings SO
 	[SerializeField] EnemySettingsSO approachSettings;
 
 	PlayerBehaviour player;
-	Vector3 distance;
-	bool tryReachPlayer = false;
-	Shooter shooter = null;
-	//MeshRenderer rend;
+	Vector3 distance;	//distance to the player
+	bool tryReachPlayer = false;	//whether this actor shoud try to approach player
 
 	private void Start()
 	{
-		//rend = GetComponentInChildren<MeshRenderer>();
-		//rend.material.color = Color.Lerp(Color.red, Color.green, currentHealth / attributes.health);
 
 		player = FindObjectOfType<PlayerBehaviour>();
 		if (player)
 		{
-			shooter = player.GetComponent<Shooter>();
 			distance = player.transform.position - transform.position;
 			StartCoroutine(CheckPlayerDistance());
 		}
@@ -37,6 +35,7 @@ public class MinionBehaviour : Actor, IDamagable
 		{
 			if(player.TryGetComponent(out IDamagable dam))
 			{
+				//if this actor collide with the player, damage it
 				player.TakeDamage(1f);
 				startRunning = false;
 			}
@@ -59,28 +58,26 @@ public class MinionBehaviour : Actor, IDamagable
 
 	protected override void ActorDeath()
 	{
-		rigidBody.velocity = Vector3.zero;
-		rigidBody.isKinematic = true;
-		startRunning = false;
-		ActorIsDead = true;
+		base.ActorDeath();
 		EventManager.TriggerEvent(EventsNameList.AnEnemyIsDead);
-		GetComponent<CapsuleCollider>().enabled = false;
-		animator.SetTrigger("Die");
 	}
 
+	//Method callde when Endless run mode is enabled. Resurrect the actor
 	public void Resurrect()
 	{
+		animator.SetTrigger("Respawn");
 		currentHealth = attributes.health;
-		//rend.material.color = Color.Lerp(Color.red, Color.green, currentHealth / attributes.health);
 		ActorIsDead = false;
 		startRunning = true;
+		rigidBody.isKinematic = false;
+		GetComponent<CapsuleCollider>().enabled = true;
+
+		transform.GetChild(0).localRotation = Quaternion.identity;
 	}
 
 	public void TakeDamage(float damage)
 	{
 		currentHealth -= damage;
-		
-		//rend.material.color = Color.Lerp(Color.red, Color.green, currentHealth / attributes.health);
 
 		if(currentHealth <= 0)
 		{
@@ -88,6 +85,9 @@ public class MinionBehaviour : Actor, IDamagable
 		}
 	}
 
+	/// <summary>
+	/// Coroutine that check if this actor is near enough to approach the player, based on level settings SO
+	/// </summary>
 	IEnumerator CheckPlayerDistance()
 	{
 		while (true)

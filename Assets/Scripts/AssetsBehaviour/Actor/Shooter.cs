@@ -2,18 +2,22 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
 
+/// <summary>
+/// This class manage the shooting at enemies and holds weapons SO stats.
+/// </summary>
 public class Shooter : MonoBehaviour, IShooter
 {
-	[SerializeField] WeaponsSO weaponStats;
+	[SerializeField] WeaponsSO weaponStats; //SO weapon stats
+	//public WeaponsSO WeaponStats { get { return weaponStats; } set { weaponStats = value; } }
 
 	UnityAction LevelStartListener;
 	UnityAction StopShootingListener;
 
-	float timer = 0f;
-	public List<Actor> EnemiesList { get; private set; } = new List<Actor>();
-	public int NearestEnemyIndex { get; private set; } = 0;
+	float timer = 0f;	//Timer for manage weapon's fire rate
+	public List<Actor> EnemiesList { get; private set; } = new List<Actor>();	//List that holds all current enemies within the level
+	public int NearestEnemyIndex { get; private set; } = 0;	//List index of the current enemy which is the nearest to the player
 
-	bool startShooting;
+	bool startShooting;	//Is legal to shoot or not
 
 	private void Awake()
 	{

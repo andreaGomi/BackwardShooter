@@ -5,22 +5,22 @@ using UnityEngine.Events;
 
 public class SpawnManager : MonoBehaviour
 {
-	[SerializeField] GameObject[] obstaclePrefab;
-	[SerializeField] GameObject[] enemiesPrefab;
+	[SerializeField] GameObject[] obstaclePrefab;         
+	[SerializeField] GameObject[] enemiesPrefab;           
 
-	[SerializeField] Transform obstacleSpawnPoint;
+	[SerializeField] Transform obstacleSpawnPoint;	
 	[SerializeField] Transform enemiesSpawnPoint;
 
 	UnityAction StopSpawningListener;
 	UnityAction UpdateEnemiesCounterListener;
 
-	float[] obsDeltaDistances;
-	List<GameObject> enemiesList = new List<GameObject>();
-	bool stopSpawning;
-	bool endlessRun;
-	int enemiesDeathCounter;
+	float[] obsDeltaDistances;								//copy of obstacle delta distance, for every obstacle in obstacles prefab array
+	List<GameObject> enemiesList = new List<GameObject>();	//list of all enemies istanciated
+	bool endlessRun;										//copy of level settings for endless run
+	int enemiesDeathCounter;								//player kills counter. Eventually triggers "AllnemiesDeath" event if all enemies got killed
+	bool stopSpawning;								
 
-	List<List<GameObject>> obstaclesInstanciated;
+	List<List<GameObject>> obstaclesInstanciated;			//List that contains, for each type of obstacles in obstacles prefab, its istances
 
 	private void Awake()
 	{
@@ -73,21 +73,24 @@ public class SpawnManager : MonoBehaviour
 		EventManager.StopListening(EventsNameList.PlayerDeath, StopSpawningListener);
 	}
 
+	//Listener for enemy death
 	private void UpdateEnemiesDeathCounter()
 	{
-		//Debug.Log("Updating enemies count"); 
 		enemiesDeathCounter++;
 		if (enemiesDeathCounter == enemiesList.Count && !endlessRun)
 			EventManager.TriggerEvent(EventsNameList.AllEnemiesDeath);
 	}
 
+	//Spawn a number of enemies specified in level settings SO, in a matrix-like order
 	private void InitialEnemiesSpawn()
 	{
-		int enemiesCount = LevelManager.Instance.LevelSettings.numberOfEnemies;
-		int rows = Mathf.FloorToInt(enemiesCount / 3);
-		int res = enemiesCount % 3;
+		int enemiesCount = LevelManager.Instance.LevelSettings.numberOfEnemies;			//total number of enemies to spawn
+		int rows = Mathf.FloorToInt(enemiesCount / 3);									//rows of the matrix
+		int res = enemiesCount % 3;														//cols of the matrix
 
-		Vector3 spawnPos = enemiesSpawnPoint.position + new Vector3(2.5f, 0f, 2.5f);
+		Vector3 spawnPos = enemiesSpawnPoint.position + new Vector3(2.5f, 0f, 2.5f);	//starting spawn pos
+
+		//for each rows and cols, instantiate and enemy and add it to the list
 		for (int i = 0; i < rows; i++)
 		{
 			for(int j = 0; j < 3; j++)
@@ -103,15 +106,20 @@ public class SpawnManager : MonoBehaviour
 
 	private void InitialObstaclesSpawn()
 	{
+		//for each type of obstacles in array
 		for(int i = 0; i < obstaclePrefab.Length; i++)
 		{
+			//create a new list  
 			List<GameObject> tempList = new List<GameObject>();
 			for(int j = 0; j < 5; j++)
 			{
+				//add obstacle istance to the list
 				tempList.Add(Instantiate(obstaclePrefab[i], obstacleSpawnPoint.position, Quaternion.identity));
 				tempList[j].SetActive(false);
 			}
+			//Add created list into main obstacle list
 			obstaclesInstanciated.Add(tempList);
+			//Save obstacle delta distance
 			obsDeltaDistances[i] = obstaclePrefab[i].GetComponentInChildren<Obstacle>().DeltaDistance;
 		}
 	}
@@ -124,9 +132,9 @@ public class SpawnManager : MonoBehaviour
 
 	IEnumerator ObstacleSpawn()
 	{
-		float lastSpawnPoint = 0f;
-		int obstacleIndex = -1;
-		bool spawnToLeftSide = true;
+		float lastSpawnPoint = 0f;		// Z value of the last spawn position, in world space
+		int obstacleIndex = -1;			// index of obstacles prefab array 
+		bool spawnToLeftSide = true;	// bool to manage spawn rotation
 
 		while (true)
 		{
@@ -135,31 +143,40 @@ public class SpawnManager : MonoBehaviour
 
 			yield return null;
 
+			//Distance to last spawn point
 			float deltaDistance = GameManager.Instance.DistanceWalked - lastSpawnPoint;
 
-			if (obstacleIndex <= 0)
-				obstacleIndex = UnityEngine.Random.Range(0, obstaclePrefab.Length);
+			//if obstacleIndex < 0, select randomly another index
+			if (obstacleIndex < 0)
+				obstacleIndex = Random.Range(0, obstaclePrefab.Length);
 
+			//If there is enough distance between last obstacle spawned and the actual desired spawn position
 			if (deltaDistance >= obsDeltaDistances[obstacleIndex])
 			{
+				//Invert spawn rotation
 				spawnToLeftSide = !spawnToLeftSide;
 
+				//Retrive enumerator from the selected obstacle container list
 				IEnumerator<GameObject> enumerator = obstaclesInstanciated[obstacleIndex].GetEnumerator();
 
 				while (enumerator.MoveNext())
 				{
 					GameObject obs = enumerator.Current as GameObject;
+					//If obs is not active OR its child isn't OR its position is far enough from the player (so it's offscreen)
 					if (!obs.activeSelf || !obs.transform.GetChild(0).gameObject.activeSelf || obs.transform.position.z + 150f < obstacleSpawnPoint.position.z)
 					{
+						//Re-enable the obstacle
 						obs.SetActive(true);
 						obs.transform.GetChild(0).gameObject.SetActive(true);
+						//Update its position
 						ReplaceObject(ref obs, spawnToLeftSide);
+						//Update last spawn position
 						lastSpawnPoint = GameManager.Instance.DistanceWalked;
 						break;
 					}
 				}
 				enumerator.Reset();
-				obstacleIndex = 0;
+				obstacleIndex = -1;
 			}
 		}
 		
@@ -171,6 +188,7 @@ public class SpawnManager : MonoBehaviour
 		obs.transform.rotation = (spawnToLeftSide) ? Quaternion.Euler(0f, 180f, 0f) : Quaternion.identity;
 	}
 	
+	//Coroutine called if Endless Run mode is enabled. Resurrect dead enemies every 2 seconds
 	IEnumerator EnemiesRespawn()
 	{
 		while (true)
@@ -186,7 +204,7 @@ public class SpawnManager : MonoBehaviour
 						minion.Resurrect();
 				}
 			}
-			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(2f);
 		}
 	}
 }

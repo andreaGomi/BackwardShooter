@@ -1,7 +1,9 @@
-using System;
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// This class retrive user touch/mouse input for player traslation and set it in player behaviour class  
+/// </summary>
 public class UserInputHandler : MonoBehaviour
 {
 	UnityAction StartLevelListener;
@@ -9,7 +11,6 @@ public class UserInputHandler : MonoBehaviour
 
 	[SerializeField] Joystick joystick;
 	
-	float trslSpeed;
 	PlayerBehaviour playerScript;
 
 	private void Awake()
@@ -39,14 +40,13 @@ public class UserInputHandler : MonoBehaviour
 		EventManager.StopListening(EventsNameList.LevelComplete, GameOverListener);
 	}
 
-	// Update is called once per frame
 	void Update()
     {
 		if (joystick)
-			ManageMobileInput();
+			UpdateUserInput();
 	}
 
-	private void ManageMobileInput()
+	private void UpdateUserInput()
 	{
 		playerScript.Traslation = new Vector3(joystick.Horizontal, 0f, 0f);
 	}

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbed535976cd9924f876bf4f2b42ba39, type: 3}
   m_Name: PlayerAttributes
   m_EditorClassIdentifier: 
-  maxSpeed: 15
+  maxSpeed: 10
   acceleration: 0.07
   health: 1
-  toughness: 20
+  toughness: 0

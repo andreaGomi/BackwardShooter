@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Obstacle : MonoBehaviour
@@ -8,12 +6,16 @@ public abstract class Obstacle : MonoBehaviour
 	public ObstaclesSO Attributes { get { return attributes; } }
 
 	[SerializeField] float deltaDistance = 1f;
+	/// <summary>
+	/// How far another obstacle can be spawned after this one
+	/// </summary>
 	public float DeltaDistance { get { return deltaDistance; } }
 	
 	private void OnTriggerEnter(Collider other)
 	{
 		if (other.gameObject.TryGetComponent(out Actor actor))
 		{
+			//If an actor triggers the collider, slow down it and disable current gameobject
 			SlowDownActor(actor);
 			gameObject.SetActive(false);
 		}

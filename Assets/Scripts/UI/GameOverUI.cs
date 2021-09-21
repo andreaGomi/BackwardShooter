@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.Events;
 using TMPro;
 
+/// <summary>
+/// This Class manage the UI after level ended
+/// </summary>
 public class GameOverUI : MonoBehaviour
 {
 	[SerializeField] GameObject gameOverPanel;
@@ -37,7 +40,7 @@ public class GameOverUI : MonoBehaviour
 		EventManager.StopListening(EventsNameList.AllEnemiesDeath, AllEnemiesDiedListener);
 		EventManager.StopListening(EventsNameList.PlayerDeath, GameOverListener);
 	}
-
+	
 	private void ShowGameOveUI()
 	{
 		gameOverPanel.SetActive(true);

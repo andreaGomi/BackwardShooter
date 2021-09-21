@@ -1,13 +1,15 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 using TMPro;
 
+/// <summary>
+/// Game Manager. Keeps track of distance run and count down timer before level start based on Level Settings SO.
+/// </summary>
 public class GameManager : MonoBehaviour
 {
-	[SerializeField] TextMeshProUGUI counterText;
+	[SerializeField] TextMeshProUGUI counterText;		//Count down texts
 
-	public float DistanceWalked { get; private set; }
+	public float DistanceWalked { get; private set; }	//The distance run by the player
 
 	private static GameManager gameManager = null;
 	public static GameManager Instance
@@ -30,7 +32,7 @@ public class GameManager : MonoBehaviour
 	float countDown;
 	Transform playerTransform;
 	Vector3 playerInitPos;
-	float stopFollowDistance;
+	float stopFollowDistance;							//(If endless run mode is disabled) At what distance from finish line follower scripts should stop follow its target 
 
 	private void Awake()
 	{
@@ -76,6 +78,11 @@ public class GameManager : MonoBehaviour
 	}
 
 	private void Update()
+	{
+		UpdateDistance();
+	}
+
+	private void UpdateDistance()
 	{
 		DistanceWalked = (playerTransform.position - playerInitPos).magnitude;
 	}

@@ -1111,9 +1111,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 667cd5d3f700af94f9c5590f12bdf61c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnLevelEnd:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!65 &973064423
 BoxCollider:
   m_ObjectHideFlags: 0

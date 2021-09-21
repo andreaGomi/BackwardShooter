@@ -1,24 +1,25 @@
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// Attach this class to an object in order to makes it follow the specified target
+/// </summary>
 public class TargetFollower : MonoBehaviour
 {
 	[Tooltip("Leave empty to make the script seeks the player")]
-	[SerializeField] string tagToFollow = "";
-	[SerializeField] bool startListenToFinishLineEvent = true;
+	[SerializeField] string tagToFollow = "";						//tag to follow. If tag is an empty string, follow the object tagged as player
+	[SerializeField] bool startListenToFinishLineEvent = true;		//should this instance of the class listen to "Approach Finish Line" event
 	UnityAction FinishLineListener;
 
-	Transform target;
-	float zOffset;
+	Transform target;		//target to follow
+	float zOffset;			//initial offset from the target
 	bool follow = true;
-
 
 	private void Awake()
 	{
 		FinishLineListener += StopFollowTarget;
 	}
 
-	// Start is called before the first frame update
 	void Start()
     {
 		try
@@ -48,7 +49,6 @@ public class TargetFollower : MonoBehaviour
 			EventManager.StopListening(EventsNameList.ApproachingFinishLine, FinishLineListener);
 	}
 
-	// Update is called once per frame
 	void Update()
     {
 		if (target && follow)

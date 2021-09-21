@@ -2,28 +2,34 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
-public abstract class Actor : MonoBehaviour
+/// <summary>
+/// This class represents an Actor, which is an object that is able to move whitin the level, use physics and interact with other objects
+/// </summary>
+[RequireComponent(typeof(Rigidbody))]
+public class Actor : MonoBehaviour
 {
+	//Actor stats SO
 	[SerializeField] protected ActorsAttributesSO attributes;
 
+	//wheater this actor is dead or not
 	public bool ActorIsDead { get; protected set; } = false;
 
 	UnityAction LevelStartListener;
 	UnityAction StopActorListener;
 
-	protected bool startRunning;
+	protected bool startRunning;	//Allow updating rigidbody velocity
 	protected float currentHealth;
-	protected float currentSpeed;
-	protected float targetSpeed;
+	protected float currentSpeed;	
+	protected float targetSpeed;	//Velocity that the rigidbody should reach
 
 	protected Animator animator;
 	protected Rigidbody rigidBody;
 	public Rigidbody RigidBody { get { return rigidBody; } }
 
-	Coroutine obstacleHittedCoroutine = null;
-	bool mainRunControl;
-	float obstacleInfluence;
-	float maxSpeed;
+	Coroutine obstacleHittedCoroutine = null;	//Coroutine that manage velocity decreasing after hit an obstacle
+	bool mainRunControl;						//if rigidbody velocity should calculate whitin coroutine or ManageRun function
+	float obstacleInfluence;					//holder for level settings obstacle's influence
+	float maxSpeed;								//holder for actor' settings max speed
 
 	protected virtual void Awake()
 	{
@@ -69,13 +75,11 @@ public abstract class Actor : MonoBehaviour
 		
 	}
 
+	//Update rigidbody velocity, always going towards object forward. Can be overridden
 	protected virtual void ManageRun()
 	{
-		//Debug.Log(gameObject.tag + " Main control");
 		currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, attributes.acceleration);
 		rigidBody.velocity = transform.forward * currentSpeed;
-		//Debug.Log("Main - magn: " + rigidBody.velocity.magnitude);
-		//Debug.Log("Main - Target: " + targetSpeed);
 	}
 
 	void LevelStarted()
@@ -83,58 +87,79 @@ public abstract class Actor : MonoBehaviour
 		startRunning = true;
 	}
 
+	// Function that is called after hitting an obstacle
 	public void OnObstacleHitted(float decrement)
 	{
-		//Debug.Log("DEC_: " + decrement);
-		//Debug.Log("OLD targetSpeed: " + targetSpeed);
-		//Debug.Log("Deceleration: " + decrement);
+		//Find proper decrement for this actor based on its attributes
 		float unitDec = Mathf.Clamp(decrement - attributes.toughness, 0f, decrement);
-		//Debug.Log("DEC: " + unitDec);
+
+		// is there a valid decrement? If not, return
 		if (unitDec == 0)
 			return;
 
+		//Don't allow target speed to go below zero
 		targetSpeed = Mathf.Clamp(currentSpeed - unitDec, 0f, currentSpeed);
-		//Debug.Log("NEW targetSpeed: " + targetSpeed);
 
 		if (obstacleHittedCoroutine != null)
 		{
-			//Debug.Log("STOPPING CORO");
+			//If an instance of the coroutine is currently going on, stop it before calling a new one
 			StopCoroutine(obstacleHittedCoroutine);
 		}
 		obstacleHittedCoroutine = StartCoroutine(DecrementSpeedOverTime());
 	}
 
+	/// <summary>
+	/// Coroutine that is called each time rigidbody velocity shoud be decremented
+	/// </summary>
 	IEnumerator DecrementSpeedOverTime()
 	{
-		//Debug.Log("Decrementing..");
 		mainRunControl = false;
-
-		//yield return new WaitForFixedUpdate();
-		//Debug.Log("Current Vel: " + rigidBody.velocity.magnitude + " -- Target: " + targetSpeed);
+		
+		//Until current rigidbody velocity hasn't reach the target velocity
 		while (rigidBody.velocity.magnitude > targetSpeed + .1f)
 		{
-			//Debug.Log("Coro - magn: " + rigidBody.velocity.magnitude);
-			//Debug.Log("Coro - Target: " + targetSpeed);
 			currentSpeed = Mathf.Lerp(targetSpeed, currentSpeed, obstacleInfluence);
 			rigidBody.velocity = transform.forward * currentSpeed;
 			yield return new WaitForFixedUpdate();
 		}
 
 		mainRunControl = true;
+
+		//Reset target speed to max speed
 		targetSpeed = maxSpeed;
 
-		//Debug.Log("Stop Decrementing");
+		obstacleHittedCoroutine = null;
 	}
 
-	protected abstract void ActorDeath();
-
-	public void StopRunning()
+	/// <summary>
+	/// Stop current actor each time level as ended
+	/// </summary>
+	private void StopRunning()
 	{
-		//Debug.Log("Chiamarta a stop");
 		startRunning = false;
 		rigidBody.velocity = Vector3.zero;
 		rigidBody.isKinematic = true;
-		animator.SetTrigger("Win");
+
+		if(!ActorIsDead)
+			animator.SetTrigger("Win");
 	}
 
+	/// <summary>
+	/// Set all current actor class' attributes properly when the current actor is dead
+	/// </summary>
+	protected virtual void ActorDeath()
+	{
+		//Freeze rigidbody
+		rigidBody.velocity = Vector3.zero;
+		rigidBody.isKinematic = true;
+
+		//Stop updating rigidbody velocity
+		startRunning = false;
+
+		ActorIsDead = true;
+		GetComponent<CapsuleCollider>().enabled = false;
+
+		//Trigger death animation
+		animator.SetTrigger("Die");
+	}
 }

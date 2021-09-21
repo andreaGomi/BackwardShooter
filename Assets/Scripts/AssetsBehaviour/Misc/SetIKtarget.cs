@@ -3,6 +3,7 @@ using UnityEngine.Events;
 
 public class SetIKtarget : MonoBehaviour
 {
+	//Listener to permit animation override or not
 	UnityAction StartLevelListener;
 	UnityAction GameOverListener;
 
@@ -36,6 +37,7 @@ public class SetIKtarget : MonoBehaviour
 
 	private void OnAnimatorIK(int layerIndex)
 	{
+		//If is not permitted to override the animation
 		if (!aimToTarget)
 		{
 			animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 0f);
@@ -48,6 +50,7 @@ public class SetIKtarget : MonoBehaviour
 		if (enemyPos == null)
 			return;
 
+		// Find target direction, normalize it and set its altitude nearly at player shoulders
 		Vector3 aimDirection = (enemyPos.position - transform.position).normalized * .45f;
 		aimDirection += transform.position;
 		aimDirection.y += 1.3f;

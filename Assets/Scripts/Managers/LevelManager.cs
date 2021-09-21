@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
+/// <summary>
+/// Class that holds level settings scriptable object and manage currnt scene reload and exit
+/// </summary>
 public class LevelManager : MonoBehaviour
 {
 	[Header("Level Settings")]
