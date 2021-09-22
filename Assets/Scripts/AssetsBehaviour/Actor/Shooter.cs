@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.VFX;
 using UnityEngine.Events;
 using System.Collections.Generic;
 
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 /// </summary>
 public class Shooter : MonoBehaviour, IShooter
 {
+	[SerializeField] VisualEffect muzzleVFX;
 	[SerializeField] WeaponsSO weaponStats; //SO weapon stats
 	//public WeaponsSO WeaponStats { get { return weaponStats; } set { weaponStats = value; } }
 
@@ -112,7 +114,7 @@ public class Shooter : MonoBehaviour, IShooter
 	{
 		dam.TakeDamage(weaponStats.damage);
 
-		//Gestire qua i vari vfx...
+		muzzleVFX.Play();
 	}
 
 	public Transform GetNearestEnemytransform()
