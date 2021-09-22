@@ -18,9 +18,9 @@ public class SpawnManager : MonoBehaviour
 	List<GameObject> enemiesList = new List<GameObject>();	//list of all enemies istanciated
 	bool endlessRun;										//copy of level settings for endless run
 	int enemiesDeathCounter;								//player kills counter. Eventually triggers "AllnemiesDeath" event if all enemies got killed
-	bool stopSpawning;								
 
 	List<List<GameObject>> obstaclesInstanciated;			//List that contains, for each type of obstacles in obstacles prefab, its istances
+	bool stopSpawning = false;										
 
 	private void Awake()
 	{
@@ -32,8 +32,6 @@ public class SpawnManager : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
     {
-		stopSpawning = false;
-		
 		obstaclesInstanciated = new List<List<GameObject>>();
 		obsDeltaDistances = new float[obstaclePrefab.Length];
 		enemiesDeathCounter = 0;
@@ -179,7 +177,6 @@ public class SpawnManager : MonoBehaviour
 				obstacleIndex = -1;
 			}
 		}
-		
 	}
 
 	private void ReplaceObject(ref GameObject obs, bool spawnToLeftSide)

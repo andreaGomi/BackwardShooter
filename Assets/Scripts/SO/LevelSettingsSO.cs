@@ -15,8 +15,8 @@ public class LevelSettingsSO : ScriptableObject
 	[Tooltip("If not endless run, how much the run will last")]
 	public float levelLength_mt;
 
-	[Tooltip("Choose a distance to the finish line in meter in which a follower should stop follow the player")]
-	public float stopFollowPlayerAt_mt;
+	//[Tooltip("Choose a distance to the finish line in meter in which a follower should stop follow the player")]
+	//public float stopFollowPlayerAt_mt;
 
 	[Tooltip("Count down to level start")]
 	public int levelCountDown;

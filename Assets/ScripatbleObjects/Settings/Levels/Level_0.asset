@@ -15,6 +15,5 @@ MonoBehaviour:
   obstacleHitInfluence: 0.8
   endlessRun: 1
   numberOfEnemies: 15
-  levelLength_mt: 350
-  stopFollowPlayerAt_mt: 130
+  levelLength_mt: 200
   levelCountDown: 1

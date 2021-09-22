@@ -7,7 +7,8 @@ using TMPro;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
-	[SerializeField] TextMeshProUGUI counterText;		//Count down texts
+	[SerializeField] TextMeshProUGUI counterText;       //Count down texts
+	[SerializeField] Transform finishLine;
 
 	public float DistanceWalked { get; private set; }	//The distance run by the player
 
@@ -48,9 +49,16 @@ public class GameManager : MonoBehaviour
 	{
 		if (!LevelManager.Instance.LevelSettings.endlessRun)
 		{
-			stopFollowDistance = Mathf.Clamp(LevelManager.Instance.LevelSettings.levelLength_mt - LevelManager.Instance.LevelSettings.stopFollowPlayerAt_mt,
-											0f,
-											LevelManager.Instance.LevelSettings.levelLength_mt);
+			float distanceToRun = LevelManager.Instance.LevelSettings.levelLength_mt;
+
+			//If level length is less than 130mt, that position the finish line properly.
+			if(distanceToRun < 130f)
+			{
+				Vector3 newFinishLinePos = finishLine.position;
+				newFinishLinePos.z = playerInitPos.z + distanceToRun;
+				finishLine.position = newFinishLinePos;
+			}
+			stopFollowDistance = Mathf.Clamp(distanceToRun - 130f, 0f, distanceToRun);
 
 			StartCoroutine(CheckDistanceWalked());
 		}

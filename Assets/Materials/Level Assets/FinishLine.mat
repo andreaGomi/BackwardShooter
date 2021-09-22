@@ -32,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Boolean_0e946cdd7c774974b92e358455eb2193: 1
+    - Boolean_0e946cdd7c774974b92e358455eb2193: 0
     m_Colors:
     - Color_d11139d8fffe4f528415623abef2fadb: {r: 1, g: 1, b: 1, a: 1}
     - Color_d11139d8fffe4f528415623abef2fadb_1: {r: 0, g: 0, b: 0, a: 1}
