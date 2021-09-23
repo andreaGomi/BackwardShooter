@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Level_0
   m_EditorClassIdentifier: 
   obstacleHitInfluence: 0.8
-  endlessRun: 1
+  endlessRun: 0
   numberOfEnemies: 15
   levelLength_mt: 200
-  levelCountDown: 1
+  levelCountDown: 3
